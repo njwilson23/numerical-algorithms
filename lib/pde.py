@@ -36,13 +36,20 @@ class CenteredSpaceDifference1(object):
         self.c = c
         return
 
-    def __call__(self):
+    def semidiscrete_matrix(self):
         """ Return the difference matrix. """
         I = np.eye(self.n)
         R = np.diag(np.ones(self.n-1), 1)
         r2 = self.k**2 / self.h**2
         A = self.c**2 * (r2*R + 2*(1-r2)*I + r2*R.T)
+
+        for cls in self.items:
+            A = cls(A)
         return A
+        
+    def append(self, other):
+        self.items.append(other)
+        return self
 
 class PeriodicBoundary1(object):
 
