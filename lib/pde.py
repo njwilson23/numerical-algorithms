@@ -7,6 +7,8 @@ Possibly abuses OO conventions.
 import numpy as np
 
 def construct_semidiscrete(*args):
+    """ Construct a semidiscrete method by composing a difference scheme and
+    some number of callables (e.g. boundary conditions, limiters). """
     A = args[0]()
     for f in args[1:]:
         A = f(A)
