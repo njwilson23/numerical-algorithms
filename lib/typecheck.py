@@ -60,13 +60,16 @@ def parsetypes(doc):
         raise LookupError("type definitions not found within module docstring")
     return types
 
-def verifytypes(func):
-    """ Finds a typestring in the __pydoc__ of *func*, and inserts code to
+def verifytypes(func, bypass=False):
+    """ Finds a typestring in the __doc__ of *func*, and inserts code to
     raise a TypeError is the passed arguments are not of the expected type.
 
-    Intended to be used as a function decorator.
+    Intended to be used as a function decorator. The *bypass* keyword argument
+    can be used to disable typechecking for code believed to be safe.
     """
     exptypes = parsetypes(func.__doc__)
+    if bypass:
+        return func
 
     def wrapper(*args):
 
