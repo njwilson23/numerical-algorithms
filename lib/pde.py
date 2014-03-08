@@ -34,6 +34,7 @@ class CenteredSpaceDifference1(object):
         self.k = k
         self.h = h
         self.c = c
+        self.items = []
         return
 
     def semidiscrete_matrix(self):
