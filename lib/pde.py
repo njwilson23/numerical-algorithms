@@ -40,7 +40,10 @@ class CenteredDifferenceScheme1(DifferenceSchemeBase):
         return
 
     def matrix(self):
-        """ Return the difference matrix for the explicit discrete scheme.
+        """ Return the difference matrix for the explicit semidiscrete scheme.
+        
+        The differences in *u* can then be computed as
+        `np.dot(L, u.ravel())`
         """
         I = np.eye(self.n)
         R = np.diag(np.ones(self.n-1), 1)
@@ -67,11 +70,10 @@ class CenteredDifferenceScheme2(DifferenceSchemeBase):
         return
 
     def matrix(self):
-        """ Return the difference matrix *L* for the explicit discrete scheme.
+        """ Return the difference matrix *L* for the explicit semidiscrete scheme.
         
         The differences in *u* can then be computed as
-
-        `np.dot(L, u.ravel())`
+        `L * u.ravel()`
         """
         nx, ny = self.shape
         rx = self.k / self.DX[0]
