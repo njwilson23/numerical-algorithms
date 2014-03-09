@@ -21,6 +21,7 @@ TODO:
 """
 
 import numpy
+import types
 
 typedict = {'int': int,
             'float': float,
@@ -28,7 +29,8 @@ typedict = {'int': int,
             'list': list,
             'tuple': tuple,
             'set': set,
-            'dict': dict}
+            'dict': dict,
+            'function' : types.FunctionType}
 
 def findtypesignature(doc):
     lines = doc.splitlines()
