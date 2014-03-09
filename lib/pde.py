@@ -39,12 +39,15 @@ class CenteredDifferenceScheme1(DifferenceSchemeBase):
         self.c = c
         return
 
-    def semidiscrete_matrix(self):
-        """ Return the difference matrix. """
+    def matrix(self, rhs_u=0):
+        """ Return the difference matrix for the explicit discrete scheme.
+        
+        *rhs_u* indicates the multiple of the current timestep to add to the RHS
+        """
         I = np.eye(self.n)
         R = np.diag(np.ones(self.n-1), 1)
         r2 = self.k**2 / self.h**2
-        A = self.c**2 * (r2*R + 2*(1-r2)*I + r2*R.T)
+        A = self.c**2 * (r2*R  -2*r2*I + r2*R.T + rhs_u*I)
 
         for cls in self.items:
             A = cls(A)
@@ -65,19 +68,26 @@ class CenteredDifferenceScheme2(DifferenceSchemeBase):
         self.c = c
         return
 
-    def semidiscrete_matrix(self):
-        """ Return the difference matrix *L*.
+    def matrix(self, rhs_u):
+        """ Return the difference matrix *L* for the explicit discrete scheme.
         
-        The discrete differences in *u* can then be computed as
+        The differences in *u* can then be computed as
 
         `np.dot(L, u.ravel())`
+
+        *rhs_u* indicates the multiple of the current timestep to add to the RHS
         """
         nx, ny = self.shape
-        dx, dy = self.DX
+        rx = self.k / self.DX[0]
+        ry = self.k / self.DX[1]
+
         ex = np.ones(nx)
         ey = np.ones(ny)
-        dxx = sp.diags([ex[1:], -2*ex, ex[:-1]], [-1, 0, 1], format='lil') / dx**2
-        dyy = sp.diags([ey[1:], -2*ey, ey[:-1]], [-1, 0, 1], format='lil') / dy**2
+        dxx = sp.diags([ex[1:], -2*ex, ex[:-1]], [-1, 0, 1], format='lil') * rx**2
+        dyy = sp.diags([ey[1:], -2*ey, ey[:-1]], [-1, 0, 1], format='lil') * ry**2
+
+        dxx += sp.diags([rhs_u*ex], [0], format='lil')
+        dyy += sp.diags([rhs_u*ey], [0], format='lil')
 
         L = sp.kron(dxx, sp.eye(ny)) + \
             sp.kron(dyy, sp.eye(nx))
