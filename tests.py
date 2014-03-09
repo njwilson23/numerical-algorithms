@@ -1,8 +1,12 @@
 
 import unittest
 import numpy as np
+import sys
+
+sys.path.append('lib')
 import roots
 import ode
+import typecheck
 
 def isnear(a, b, tol=1e-4):
     return abs(a-b) < tol
@@ -28,6 +32,55 @@ class RootFindTests(unittest.TestCase):
         self.assertTrue(isnear(res[0], 3))
         self.assertTrue(isnear(res[1], -7))
         return res
+
+class TypeCheckTests(unittest.TestCase):
+
+    def setUp(self):
+        def f(a, b, c):
+            """ <a::function, b::float[], c::int> """
+            return
+        self.f1 = f
+        return
+
+    def apply_verifytypes(self, f, *args):
+        """ Applies `verifytypes` function to *f* and *args*. Returns exception
+        if TypeError is raised. Otherwise, returns None. """
+        res = None
+        g = typecheck.verifytypes(f)
+        try:
+            g(*args)
+        except TypeError as e:
+            res = e
+        finally:
+            return res
+
+    def test_failure1(self):
+        a = lambda a: a**2
+        b = np.ones(5).astype(int)
+        c = 4
+        
+        res = self.apply_verifytypes(self.f1, a, b, c)
+        self.assertIsInstance(res, TypeError)
+        return
+
+    def test_failure2(self):
+        a = lambda a: a**2
+        b = np.ones(5).astype(float)
+        c = 4.2
+        
+        res = self.apply_verifytypes(self.f1, a, b, c)
+        self.assertIsInstance(res, TypeError)
+        return
+
+    def test_success1(self):
+        a = lambda a: a**2
+        b = np.ones(5).astype(float)
+        c = 4
+
+        res = self.apply_verifytypes(self.f1, a, b, c)
+        self.assertIs(res, None)
+        return
+
 
 if __name__ == "__main__":
     unittest.main()
