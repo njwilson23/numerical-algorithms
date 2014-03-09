@@ -126,10 +126,41 @@ class PeriodicBoundary2(object):
         return
 
     def __call__(self, L, schm):
-        nx, ny = schm.shape
-        for i in range(ny):
-            for j in range(ny):
-                L[i*nx, j*nx + nx-1] = 1.0
-                L[i*nx + nx-1, j*nx] = 1.0
+        nr, nc = schm.shape
+
+        # Top boundary
+        irowto = np.arange(0,           nc)
+        icolto = np.arange((nr-1)*nc,   nr*nc)
+        irowfm = np.arange(nc,          2*nc)
+        icolfm = np.arange(0,           nr)
+
+        L[irowto, icolto] = L[irowfm, icolfm]
+
+        # Bottom boundary
+        irowto = np.arange((nc-1)*nr,   nr*nc)
+        icolto = np.arange(0,           nr)
+        irowfm = np.arange((nc-2)*nr,   (nc-1)*nr)
+        icolfm = np.arange((nc-1)*nr,   nr*nc)
+
+        L[irowto, icolto] = L[irowfm, icolfm]
+
+        #print L[irowfm, icolfm]
+
+        # Left boundary
+        irowto = np.arange(0,           nr*nc, nr)
+        icolto = np.arange(nr-1,        nr*nc, nr)
+        irowfm = np.arange(1,           nr*nc, nr)
+        icolfm = np.arange(0,           nr*nc, nr)
+
+        L[irowto, icolto] = L[irowfm, icolfm]
+
+        # Right boundary
+        irowto = np.arange(nr-1,        nr*nc, nr)
+        icolto = np.arange(0,           nr*nc, nr)
+        irowfm = np.arange(nr-2,        nr*nc, nr)
+        icolfm = np.arange(nr-1,        nr*nc, nr)
+
+        L[irowto, icolto] = L[irowfm, icolfm]
+
         return L
 
