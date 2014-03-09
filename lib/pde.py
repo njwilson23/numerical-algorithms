@@ -5,8 +5,18 @@ Possibly abuses OO conventions.
 """
 
 import numpy as np
+import scipy.sparse as sp
 
-class CenteredSpaceDifference1(object):
+class DifferenceSchemeBase(object):
+
+    def __init__(self):
+        self.items = []
+        
+    def append(self, other):
+        self.items.append(other)
+        return self
+
+class CenteredDifferenceScheme1(DifferenceSchemeBase):
 
     def __init__(self, n, k, h, c):
         """ Implements a centered (symmetric) space difference, i.e.
@@ -22,11 +32,11 @@ class CenteredSpaceDifference1(object):
 
         <n::int, k::float, h::float, c::float>
         """
+        super(type(self), self).__init__()
         self.n = n
         self.k = k
         self.h = h
         self.c = c
-        self.items = []
         return
 
     def semidiscrete_matrix(self):
@@ -39,10 +49,44 @@ class CenteredSpaceDifference1(object):
         for cls in self.items:
             A = cls(A)
         return A
+
+class CenteredDifferenceScheme2(DifferenceSchemeBase):
+
+    def __init__(self, shape, k, DX, c):
+        """ Implements a centered (symmetric) space difference in two
+        dimensions.
+
+        <shape::int[], k::float, DX::float[], c::float>
+        """
+        super(type(self), self).__init__()
+        self.shape = shape
+        self.k = k
+        self.DX = DX
+        self.c = c
+        return
+
+    def semidiscrete_matrix(self):
+        """ Return the difference matrix *L*.
         
-    def append(self, other):
-        self.items.append(other)
-        return self
+        The discrete differences in *u* can then be computed as
+
+        `np.dot(L, u.ravel())`
+        """
+        nx, ny = self.shape
+        dx, dy = self.DX
+        ex = np.ones(nx)
+        ey = np.ones(ny)
+        dxx = sp.diags([ex[1:], -2*ex, ex[:-1]], [-1, 0, 1], format='lil') / dx**2
+        dyy = sp.diags([ey[1:], -2*ey, ey[:-1]], [-1, 0, 1], format='lil') / dy**2
+
+        L = sp.kron(dxx, sp.eye(ny)) + \
+            sp.kron(dyy, sp.eye(nx))
+
+        for cls in self.items:
+            L = cls(L.tolil(), self)
+
+        return L.tocsc()
+
 
 class PeriodicBoundary1(object):
 
@@ -63,4 +107,24 @@ class PeriodicBoundary1(object):
         A[0,-1] = A[1,0]
         A[-1,0] = A[-2,-1]
         return A
+
+class PeriodicBoundary2(object):
+
+    def __init__(self):
+        """ Applies a periodic boundary condition to a one-dimensional
+        difference matrix.
+        
+        Limitations:
+        ------------
+        assumes a symmetric stencil with width 3
+        """
+        return
+
+    def __call__(self, L, schm):
+        nx, ny = schm.shape
+        for i in range(ny):
+            for j in range(ny):
+                L[i*nx, j*nx + nx-1] = 1.0
+                L[i*nx + nx-1, j*nx] = 1.0
+        return L
 
