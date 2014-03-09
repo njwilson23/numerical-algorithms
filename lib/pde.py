@@ -51,7 +51,7 @@ class CenteredDifferenceScheme1(DifferenceSchemeBase):
         A = self.c**2 * (r2*R  -2*r2*I + r2*R.T)
 
         for cls in self.items:
-            A = cls(A)
+            A = cls(A, self)
         return A
 
 class CenteredDifferenceScheme2(DifferenceSchemeBase):
@@ -92,7 +92,6 @@ class CenteredDifferenceScheme2(DifferenceSchemeBase):
 
         return L.tocsc()
 
-
 class PeriodicBoundary1(object):
 
     def __init__(self):
@@ -105,7 +104,7 @@ class PeriodicBoundary1(object):
         """
         return
 
-    def __call__(self, A):
+    def __call__(self, A, schm):
         m, n = A.shape[:2]
         if (m < 3) or (n < 3):
             raise ValueError("'A' must be at least 3x3")
@@ -143,8 +142,6 @@ class PeriodicBoundary2(object):
         icolfm = np.arange((nc-1)*nr,   nr*nc)
 
         L[irowto, icolto] = L[irowfm, icolfm]
-
-        #print L[irowfm, icolfm]
 
         # Left boundary
         irowto = np.arange(0,           nr*nc, nr)
