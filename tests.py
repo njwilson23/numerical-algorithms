@@ -57,12 +57,12 @@ class CenteredDifference1_FD_Tests(unittest.TestCase):
 
     def test_leapfrog1d(self):
         """ test 1D CenteredDifferenceScheme1 using leapfrog time
-        discretization on the wave equation with homogenous dirichlet boundary
-        conditions """
+        discretization on the wave equation with homogeneous Dirichlet
+        boundary conditions """
 
         p = self.params
-        scheme = pde.CenteredDifferenceScheme1(p['n'], p['h'], p['c'])
-        A = scheme.matrix() * p['k']**2
+        scheme = pde.CenteredDifferenceScheme1(p['n'], p['h'])
+        A = scheme.matrix() * p['k']**2 * p['c']
         
         x = p['x']
         T = p['T']
@@ -121,9 +121,9 @@ class CenteredDifference1_FD_Tests(unittest.TestCase):
         conditions """
 
         p = self.params
-        scheme = pde.CenteredDifferenceScheme1(p['n'], p['h'], p['c']) \
+        scheme = pde.CenteredDifferenceScheme1(p['n'], p['h']) \
                     .append(pde.PeriodicBoundary1())
-        A = scheme.matrix() * p['k']**2
+        A = scheme.matrix() * p['k']**2 * p['c']
         
         x = p['x']
         T = p['T']
@@ -179,8 +179,8 @@ class CenteredDifference1_FD_Tests(unittest.TestCase):
 class CenteredDifference2_FD_Tests(unittest.TestCase):
 
     def test_leapfrog2d(self):
-        """ tests the 2d CenteredDifferenceScheme2 using a leapgrog time
-        discretization to solve the wave equation with homogenous dirichlet
+        """ tests CenteredDifferenceScheme2 using a leapfrog time
+        discretization to solve the wave equation with homogeneous Dirichlet
         boundary conditions. """
         n = 32
         c = 1.0
@@ -189,8 +189,8 @@ class CenteredDifference2_FD_Tests(unittest.TestCase):
         dt = 0.9 * dx / np.sqrt(2)
         T = np.arange(0, 10+dt/2, dt)
         
-        scheme = pde.CenteredDifferenceScheme2((n, n), (dx, dx), c)
-        L = scheme.matrix() * dt**2
+        scheme = pde.CenteredDifferenceScheme2((n, n), (dx, dx))
+        L = scheme.matrix() * c * dt**2
         
         def f(x, y, c):
             X, Y = np.meshgrid(y, x)
@@ -260,8 +260,8 @@ class TypeCheckTests(unittest.TestCase):
         return
 
     def apply_verifytypes(self, f, *args):
-        """ Applies `verifytypes` function to *f* and *args*. Returns exception
-        if TypeError is raised. Otherwise, returns None. """
+        """ Applies `verifytypes` function to *f* and *args*. Returns
+        exception if TypeError is raised. Otherwise, returns None. """
         res = None
         g = typecheck.verifytypes(f)
         try:
