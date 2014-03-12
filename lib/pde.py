@@ -18,7 +18,7 @@ class DifferenceSchemeBase(object):
 
 class CenteredDifferenceScheme1(DifferenceSchemeBase):
 
-    def __init__(self, n, h, c):
+    def __init__(self, n, h):
         """ Implements a centered (symmetric) space difference, i.e.
     
             u_1 - 2u_0 + u_-1
@@ -35,7 +35,6 @@ class CenteredDifferenceScheme1(DifferenceSchemeBase):
         super(type(self), self).__init__()
         self.n = n
         self.h = h
-        self.c = c
         return
 
     def matrix(self):
@@ -47,7 +46,7 @@ class CenteredDifferenceScheme1(DifferenceSchemeBase):
         I = np.eye(self.n)
         R = np.diag(np.ones(self.n-1), 1)
         r2 = 1.0/self.h**2
-        A = self.c**2 * (r2*R  -2*r2*I + r2*R.T)
+        A = (r2*R  -2*r2*I + r2*R.T)
 
         for cls in self.items:
             A = cls(A, self)
@@ -55,7 +54,7 @@ class CenteredDifferenceScheme1(DifferenceSchemeBase):
 
 class CenteredDifferenceScheme2(DifferenceSchemeBase):
 
-    def __init__(self, shape, DX, c):
+    def __init__(self, shape, DX):
         """ Implements a centered (symmetric) space difference in two
         dimensions.
 
@@ -64,7 +63,6 @@ class CenteredDifferenceScheme2(DifferenceSchemeBase):
         super(type(self), self).__init__()
         self.shape = shape
         self.DX = DX
-        self.c = c
         return
 
     def matrix(self):
