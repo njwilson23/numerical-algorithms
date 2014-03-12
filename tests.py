@@ -248,7 +248,39 @@ class CenteredDifference2_FD_Tests(unittest.TestCase):
         self.assertTrue(np.allclose(U[-1,10:21,10:21], correctresult))
         return
 
+    def test_centered2d_convergence(self):
+        """ ensure that the 2d laplacian is second order in convergence """
+        def test2dspace(n):
+            x = np.linspace(0, 2*np.pi - 2*np.pi/n, n)
+            X, Y = np.meshgrid(x, x)
+            u = np.sin(X)*np.sin(Y)
+            dx = x[1] - x[0]
+            scheme = pde.CenteredDifferenceScheme2((n, n), (dx, dx)) \
+                        .append(pde.PeriodicBoundary2())
+            L = scheme.matrix()
+            uxx = np.reshape(L * u.ravel(), u.shape)
+            err = np.max(np.abs(uxx+2*u))
+            return err
 
+        ordlist = []
+        errprev = None
+        print "testing Centered2dScheme convergence..."
+        print "    error      order"
+        print "--------------------"
+        for n in doubleto(8, 512):
+            err = test2dspace(n)
+            if errprev is not None:
+                order = np.log(errprev / err) / np.log(2.0)
+                ordlist.append(order)
+            else:
+                order = np.nan
+            errprev = err
+            print "    {0:2.4e} {1:.2f}".format(err, order)
+
+        # all convergence orders should be about 2 because
+        # CenteredDifferenceScheme2 is second order
+        self.assertTrue(max(a-2.0 for a in ordlist) < 0.1)
+        return
 
 class TypeCheckTests(unittest.TestCase):
 
@@ -298,6 +330,11 @@ class TypeCheckTests(unittest.TestCase):
         self.assertIs(res, None)
         return
 
+def doubleto(x, xmax):
+    if x <= xmax:
+        return [x] + doubleto(2*x, xmax)
+    else:
+        return []
 
 if __name__ == "__main__":
     unittest.main()
