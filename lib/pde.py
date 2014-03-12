@@ -75,8 +75,8 @@ class CenteredDifferenceScheme2(DifferenceSchemeBase):
 
         ex = np.ones(nx)
         ey = np.ones(ny)
-        dxx = sp.diags([ex[1:], -2*ex, ex[:-1]], [-1, 0, 1], format='lil') / self.DX[0]**2
-        dyy = sp.diags([ey[1:], -2*ey, ey[:-1]], [-1, 0, 1], format='lil') / self.DX[1]**2
+        dxx = sp.diags([ex[1:], -2*ex, ex[:-1]], [-1, 0, 1]) / self.DX[0]**2
+        dyy = sp.diags([ey[1:], -2*ey, ey[:-1]], [-1, 0, 1]) / self.DX[1]**2
 
         L = sp.kron(sp.eye(ny), dxx) + \
             sp.kron(dyy, sp.eye(nx))
