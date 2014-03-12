@@ -61,8 +61,8 @@ class CenteredDifference1_FD_Tests(unittest.TestCase):
         conditions """
 
         p = self.params
-        scheme = pde.CenteredDifferenceScheme1(p['n'], p['k'], p['h'], p['c'])
-        A = scheme.matrix()
+        scheme = pde.CenteredDifferenceScheme1(p['n'], p['h'], p['c'])
+        A = scheme.matrix() * p['k']**2
         
         x = p['x']
         T = p['T']
@@ -121,9 +121,9 @@ class CenteredDifference1_FD_Tests(unittest.TestCase):
         conditions """
 
         p = self.params
-        scheme = pde.CenteredDifferenceScheme1(p['n'], p['k'], p['h'], p['c']) \
+        scheme = pde.CenteredDifferenceScheme1(p['n'], p['h'], p['c']) \
                     .append(pde.PeriodicBoundary1())
-        A = scheme.matrix()
+        A = scheme.matrix() * p['k']**2
         
         x = p['x']
         T = p['T']
@@ -189,8 +189,8 @@ class CenteredDifference2_FD_Tests(unittest.TestCase):
         dt = 0.9 * dx / np.sqrt(2)
         T = np.arange(0, 10+dt/2, dt)
         
-        scheme = pde.CenteredDifferenceScheme2((n, n), dt, (dx, dx), c)
-        L = scheme.matrix()
+        scheme = pde.CenteredDifferenceScheme2((n, n), (dx, dx), c)
+        L = scheme.matrix() * dt**2
         
         def f(x, y, c):
             X, Y = np.meshgrid(y, x)

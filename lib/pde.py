@@ -18,7 +18,7 @@ class DifferenceSchemeBase(object):
 
 class CenteredDifferenceScheme1(DifferenceSchemeBase):
 
-    def __init__(self, n, k, h, c):
+    def __init__(self, n, h, c):
         """ Implements a centered (symmetric) space difference, i.e.
     
             u_1 - 2u_0 + u_-1
@@ -34,7 +34,6 @@ class CenteredDifferenceScheme1(DifferenceSchemeBase):
         """
         super(type(self), self).__init__()
         self.n = n
-        self.k = k
         self.h = h
         self.c = c
         return
@@ -47,7 +46,7 @@ class CenteredDifferenceScheme1(DifferenceSchemeBase):
         """
         I = np.eye(self.n)
         R = np.diag(np.ones(self.n-1), 1)
-        r2 = self.k**2 / self.h**2
+        r2 = 1.0/self.h**2
         A = self.c**2 * (r2*R  -2*r2*I + r2*R.T)
 
         for cls in self.items:
@@ -56,7 +55,7 @@ class CenteredDifferenceScheme1(DifferenceSchemeBase):
 
 class CenteredDifferenceScheme2(DifferenceSchemeBase):
 
-    def __init__(self, shape, k, DX, c):
+    def __init__(self, shape, DX, c):
         """ Implements a centered (symmetric) space difference in two
         dimensions.
 
@@ -64,7 +63,6 @@ class CenteredDifferenceScheme2(DifferenceSchemeBase):
         """
         super(type(self), self).__init__()
         self.shape = shape
-        self.k = k
         self.DX = DX
         self.c = c
         return
@@ -76,13 +74,11 @@ class CenteredDifferenceScheme2(DifferenceSchemeBase):
         `L * u.ravel()`
         """
         nx, ny = self.shape
-        rx = self.k / self.DX[0]
-        ry = self.k / self.DX[1]
 
         ex = np.ones(nx)
         ey = np.ones(ny)
-        dxx = sp.diags([ex[1:], -2*ex, ex[:-1]], [-1, 0, 1], format='lil') * rx**2
-        dyy = sp.diags([ey[1:], -2*ey, ey[:-1]], [-1, 0, 1], format='lil') * ry**2
+        dxx = sp.diags([ex[1:], -2*ex, ex[:-1]], [-1, 0, 1], format='lil') / self.DX[0]**2
+        dyy = sp.diags([ey[1:], -2*ey, ey[:-1]], [-1, 0, 1], format='lil') / self.DX[1]**2
 
         L = sp.kron(sp.eye(ny), dxx) + \
             sp.kron(dyy, sp.eye(nx))
