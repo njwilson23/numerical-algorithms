@@ -279,7 +279,7 @@ class CenteredDifference2_FD_Tests(unittest.TestCase):
 
         # all convergence orders should be about 2 because
         # CenteredDifferenceScheme2 is second order
-        self.assertTrue(max(a-2.0 for a in ordlist) < 0.1)
+        self.assertTrue(max(a-2.0 for a in ordlist) < 0.05)
         return
 
 class TypeCheckTests(unittest.TestCase):
