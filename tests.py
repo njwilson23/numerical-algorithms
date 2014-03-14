@@ -282,54 +282,6 @@ class CenteredDifference2_FD_Tests(unittest.TestCase):
         self.assertTrue(max(a-2.0 for a in ordlist) < 0.05)
         return
 
-class TypeCheckTests(unittest.TestCase):
-
-    def setUp(self):
-        def f(a, b, c):
-            """ <a::function, b::float[], c::int> """
-            return
-        self.f1 = f
-        return
-
-    def apply_verifytypes(self, f, *args):
-        """ Applies `verifytypes` function to *f* and *args*. Returns
-        exception if TypeError is raised. Otherwise, returns None. """
-        res = None
-        g = typecheck.verifytypes(f)
-        try:
-            g(*args)
-        except TypeError as e:
-            res = e
-        finally:
-            return res
-
-    def test_failure1(self):
-        a = lambda a: a**2
-        b = np.ones(5).astype(int)
-        c = 4
-        
-        res = self.apply_verifytypes(self.f1, a, b, c)
-        self.assertIsInstance(res, TypeError)
-        return
-
-    def test_failure2(self):
-        a = lambda a: a**2
-        b = np.ones(5).astype(float)
-        c = 4.2
-        
-        res = self.apply_verifytypes(self.f1, a, b, c)
-        self.assertIsInstance(res, TypeError)
-        return
-
-    def test_success1(self):
-        a = lambda a: a**2
-        b = np.ones(5).astype(float)
-        c = 4
-
-        res = self.apply_verifytypes(self.f1, a, b, c)
-        self.assertIs(res, None)
-        return
-
 def doubleto(x, xmax):
     if x <= xmax:
         return [x] + doubleto(2*x, xmax)
