@@ -66,7 +66,8 @@ class CenteredDifferenceScheme2(DifferenceSchemeBase):
         return
 
     def matrix(self):
-        """ Return the difference matrix *L* for the explicit semidiscrete scheme.
+        """ Return the difference matrix *L* for the explicit semidiscrete
+        scheme.
         
         The differences in *u* can then be computed as
         `L * u.ravel()`

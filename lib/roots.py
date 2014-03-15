@@ -27,8 +27,8 @@ def _newton_iterv(f, J, x0, tol=1e-8, maxiter=50):
     return x
 
 def newton_iter(f, J, u, tol=1e-8, maxiter=50):
-    """ Newton iteration. Dispatches to an efficient method for either scaler
-    or vector data in *u*.
+    """ Newton iteration. Dispatches to a method for either scaler or vector
+    data in *u*.
 
     <f::Function, J::Function, u::Float[], tol::Float, maxiter::Int>
     """
