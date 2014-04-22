@@ -1,8 +1,17 @@
 module IterativeSolvers
 
+# directly implement the iteration with a matrix solve at every step
 function solve_iter(P::AbstractArray, A::AbstractArray, x::Array, b::Array, n::Int)
     for i=1:n
         x = P \ ((P-A)*x + b)
+    end
+    return x
+end
+
+# use the pre-solved matrix M
+function solve_iter(M::AbstractArray, x::Array, c::Array, n::Int)
+    for i=1:n
+        x = M*x + c
     end
     return x
 end
@@ -14,7 +23,10 @@ end
 # Optionally, performs weighted Jacobi, where P = diag(A)/w
 function jacobi(A, x, b, n; w=1.0)
     P = spdiagm(diag(A) / w, 0)
-    x = solve_iter(P, A, x, b, n)
+    M = (I - P\A)
+    c = P\b
+    #x = solve_iter(P, A, x, b, n)
+    x = solve_iter(M, x, c, n)
     return x
 end
 
@@ -24,7 +36,10 @@ weightedjacobi(A, x, b, n) = jacobi(A, x, b, n, w=2.0/3.0)
 # Preconditioner P = diag(A) + tril(A)
 function gaussseidel(A, x, b, n)
     P = tril(A)
-    x = solve_iter(P, A, x, b, n)
+    M = (I - P\A)
+    c = P\b
+    #x = solve_iter(P, A, x, b, n)
+    x = solve_iter(M, x, c, n)
     return x
 end
 
