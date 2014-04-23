@@ -23,10 +23,10 @@ end
 # Optionally, performs weighted Jacobi, where P = diag(A)/w
 function jacobi(A, x, b, n; w=1.0)
     P = spdiagm(diag(A) / w, 0)
-    M = (I - P\A)
-    c = P\b
-    #x = solve_iter(P, A, x, b, n)
-    x = solve_iter(M, x, c, n)
+    x = solve_iter(P, A, x, b, n)
+    #M = (I - P\A)
+    #c = P\b
+    #x = solve_iter(M, x, c, n)
     return x
 end
 
@@ -36,10 +36,10 @@ weightedjacobi(A, x, b, n) = jacobi(A, x, b, n, w=2.0/3.0)
 # Preconditioner P = diag(A) + tril(A)
 function gaussseidel(A, x, b, n)
     P = tril(A)
-    M = (I - P\A)
-    c = P\b
-    #x = solve_iter(P, A, x, b, n)
-    x = solve_iter(M, x, c, n)
+    x = solve_iter(P, A, x, b, n)
+    #M = (I - P\A)
+    #c = P\b
+    #x = solve_iter(M, x, c, n)
     return x
 end
 
@@ -58,7 +58,4 @@ err = maximum(x_direct - x_iter)
 @printf("error: %2.3e\n", err)
 
 end #module
-
-
-
 
