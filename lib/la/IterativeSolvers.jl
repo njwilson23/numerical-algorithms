@@ -43,6 +43,37 @@ function gaussseidel(A, x, b, n)
     return x
 end
 
+# Conjugate gradients (Krylov iteration)
+# nearly a direct translation of
+# http://www-math.mit.edu/cse/codes/mit18086_cg.m
+function conjgrad(A, b; maxiter=null)
+
+    maxiter = maxiter==null? size(A,1) : maxiter
+    d = copy(b) # direction
+    r = copy(b) # residual
+    x = 0*b     # working solution
+    r2 = (r' * r)[1]
+
+    for iter = 1:maxiter
+
+        Ad = A*d
+        alpha = (r2 / (d'*Ad)[1])
+        x += alpha*d
+        r -= alpha*d
+        r = b - A*x
+        r2prev = r2
+        r2 = (r'*r)[1]
+        beta = r2/r2prev
+        d = r + beta*d
+
+        if norm(r) < 1e-8
+            break
+        end
+
+    end
+
+    return x
+end
 
 # Test
 n = 32
