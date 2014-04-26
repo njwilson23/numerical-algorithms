@@ -16,4 +16,5 @@ Contents
 - Iterative linear system solvers
     - Jacobi
     - Gauss-Seidel
+    - Conjugate gradients
 
